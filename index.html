@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Сундучок стихов — онлайн-хрестоматия</title>
+  <style>
+    :root {
+      --paper: #fffaf0;
+      --card: #fffef9;
+      --ink: #34313a;
+      --muted: #706a75;
+      --accent: #547f61;
+      --accent-dark: #365c43;
+      --pink: #f5c7c4;
+      --yellow: #f4dc8d;
+      --blue: #c9e4ec;
+      --line: #e9dfcc;
+      --shadow: 0 8px 24px #594b3118;
+    }
+
+    body.dark {
+      --paper: #242831;
+      --card: #303640;
+      --ink: #f6f0e4;
+      --muted: #c5bdaf;
+      --accent: #b2d4a1;
+      --accent-dark: #d5efc4;
+      --pink: #78585e;
+      --yellow: #71633f;
+      --blue: #425d67;
+      --line: #4a5057;
+      --shadow: 0 8px 24px #0004;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 8% 10%, var(--pink) 0 8px, transparent 9px),
+        radial-gradient(circle at 94% 28%, var(--blue) 0 10px, transparent 11px),
+        var(--paper);
+      color: var(--ink);
+      font-family: "Trebuchet MS", Arial, sans-serif;
+      line-height: 1.6;
+      transition: background .2s, color .2s;
+    }
+
+    button, a { font: inherit; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px clamp(16px, 5vw, 64px);
+      border-bottom: 2px dashed var(--line);
+      background: var(--card);
+    }
+
+    .brand {
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .theme-button, .back-button, .reader-controls button {
+      border: 2px solid var(--line);
+      border-radius: 14px;
+      background: var(--card);
+      color: var(--ink);
+      padding: 8px 13px;
+      cursor: pointer;
+    }
+
+    .theme-button:hover, .back-button:hover, .reader-controls button:hover {
+      border-color: var(--accent);
+    }
+
+    main {
+      width: min(100% - 32px, 1000px);
+      margin: 32px auto 64px;
+    }
+
+    .hero {
+      padding: clamp(22px, 5vw, 48px);
+      margin-bottom: 26px;
+      border: 2px solid var(--line);
+      border-radius: 30px 24px 32px 22px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      transform: rotate(-.3deg);
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 6vw, 3.4rem);
+      line-height: 1.1;
+    }
+
+    .hero p { margin: 0; color: var(--muted); }
+
+    .eyebrow {
+      color: var(--accent-dark);
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      font-size: .78rem;
+    }
+
+    .author-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+    }
+
+    .author-card {
+      width: 100%;
+      min-height: 92px;
+      padding: 18px;
+      text-align: left;
+      color: var(--ink);
+      background: var(--card);
+      border: 2px solid var(--line);
+      border-radius: 20px 26px 19px 25px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform .15s, border-color .15s;
+    }
+
+    .author-card:hover {
+      transform: translateY(-3px) rotate(-.5deg);
+      border-color: var(--accent);
+    }
+
+    .author-card strong { display: block; font-size: 1.1rem; }
+    .author-card span { color: var(--muted); font-size: .9rem; }
+
+    .profile {
+      display: grid;
+      grid-template-columns: minmax(180px, 280px) 1fr;
+      gap: 24px;
+      align-items: start;
+      padding: 22px;
+      background: var(--card);
+      border: 2px solid var(--line);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      margin: 18px 0 28px;
+    }
+
+    .portrait {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      border: 5px solid var(--yellow);
+      border-radius: 24px 18px 26px 20px;
+      background: var(--paper);
+    }
+
+    .portrait-placeholder {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 4 / 5;
+      padding: 16px;
+            border: 3px dashed var(--line);
+      border-radius: 24px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .profile h1 { margin: 4px 0 10px; line-height: 1.15; }
+    .bio { color: var(--muted); }
+
+    .works-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .work-card {
+      padding: 17px 19px;
+      background: var(--card);
+      border: 2px solid var(--line);
+      border-left: 8px solid var(--blue);
+      border-radius: 15px 22px 18px 22px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      color: var(--ink);
+      text-align: left;
+    }
+
+    .work-card:hover { border-left-color: var(--accent); }
+    .work-title { display: block; font-weight: 800; font-size: 1.08rem; }
+    .work-groups { display: block; color: var(--muted); margin-top: 5px; }
+
+    .reader {
+      background: var(--card);
+      border: 2px solid var(--line);
+      border-radius: 26px;
+      padding: clamp(20px, 5vw, 42px);
+      box-shadow: var(--shadow);
+    }
+
+    .reader h1 { line-height: 1.2; }
+    .reader-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin: 18px 0;
+    }
+
+    .reader-text {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.25rem;
+      line-height: 1.9;
+      white-space: pre-line;
+      border-top: 2px dashed var(--line);
+      padding-top: 20px;
+    }
+
+    .notice { color: var(--muted); }
+    .hidden { display: none !important; }
+
+    @media (max-width: 650px) {
+      .profile { grid-template-columns: 1fr; }
+      .portrait, .portrait-placeholder { max-width: 250px; }
+      .topbar { padding-inline: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" onclick="showAuthors()">📚 Сундучок стихов</button>
+    <button class="theme-button" id="themeButton" type="button">🌙 Тёмная тема</button>
+  </header>
+
+  <main>
+    <section id="authorsPage">
+      <div class="hero">
+        <div class="eyebrow">Онлайн-хрестоматия для дошкольников</div>
+        <h1>Стихи, которые растут вместе с вами 🌱</h1>
+        <p>Выберите автора, чтобы познакомиться с его биографией и произведениями.</p>
+      </div>
+      <h2>Авторы хрестоматии</h2>
+      <div class="author-grid" id="authorGrid"></div>
+    </section>
+
+    <section id="authorPage" class="hidden">
+      <button class="back-button" type="button" onclick="showAuthors()">← Вернуться к авторам</button>
+      <div id="authorProfile"></div>
+      <h2>Произведения для детей</h2>
+      <div class="works-list" id="worksList"></div>
+    </section>
+
+    <section id="readerPage" class="hidden">
+      <button class="back-button" type="button" onclick="showWorks()">← Вернуться к списку произведений</button>
+      <article class="reader" id="reader"></article>
+    </section>
+  </main>
+
+  <script>
+    const authors = [
+      {
+        id: "nikitin", name: "Иван Саввич Никитин", portrait: "nikitin.jpg",
+        bio: "Русский поэт XIX века. Родился в Воронеже. В стихах Никитина часто звучат любовь к родной природе и интерес к жизни простых людей.",
+        works: [
+          ["«Зашумела, разгулялась…» (из стихотворения «Песня»)", ["Первая младшая группа"]],
+          ["«Ясное утро» (из стихотворения «Утро на берегу озера»)", ["Средняя группа"]],
+          ["«Встреча зимы»", ["Старшая группа"]]
+        ]
+      },
+      {
+        id: "surikov", name: "Иван Захарович Суриков", portrait: "surikov.jpg",
+        bio: "Русский поэт, известный лирическими стихами о природе и народной жизни. Многие его произведения легко запоминаются благодаря напевности.",
+        works: [["«Зима»", ["Вторая младшая группа", "Средняя группа", "Старшая группа"]]]
+      },
+      {
+        id: "nekrasov", name: "Николай Алексеевич Некрасов", portrait: "nekrasov.jpg",
+        bio: "Русский поэт и писатель. В его стихах встречаются яркие картины природы и сцены из жизни людей.",
+        works: [
+          ["«Перед дождём» (сокращение)", ["Средняя группа"]],
+          ["«Не ветер бушует над бором»", ["Средняя группа", "Старшая группа"]],
+                    ["«Зелёный шум»", ["Старшая группа"]],
+          ["«Ух, жарко! До полдня грибы собирали»", ["Старшая группа"]]
+        ]
+      },
+      {
+        id: "tyutchev", name: "Фёдор Иванович Тютчев", portrait: "tyutchev.jpg",
+        bio: "Русский поэт и дипломат. Особенно известны его стихотворения о природе, временах года и переменчивом состоянии погоды.",
+        works: [
+          ["«В небе тают облака» (сокращение)", ["Средняя группа"]],
+          ["«Чародейкою зимою»", ["Старшая группа"]],
+          ["«Зима недаром злится»", ["Старшая группа"]]
+        ]
+      },
+      {
+        id: "fet", name: "Афанасий Афанасьевич Фет", portrait: "fet.jpg",
+        bio: "Русский поэт, чьи лирические стихи часто передают тонкие впечатления от природы, музыки и повседневной жизни.",
+        works: [
+          ["«Кот поёт, глаза прищуря»", ["Первая младшая группа", "Старшая группа"]],
+          ["«Ласточки пропали» (сокращение)", ["Средняя группа"]],
+          ["«Мама! Глянь-ка из окошка»", ["Средняя группа"]]
+        ]
+      },
+      {
+        id: "maykov", name: "Аполлон Николаевич Майков", portrait: "maykov.jpg",
+        bio: "Русский поэт. Многие его стихотворения посвящены красоте природы, смене времён года и детским впечатлениям.",
+        works: [
+          ["«Голубенький, чистый…» (из стихотворения «Весна»)", ["Вторая младшая группа", "Средняя группа"]],
+          ["«Ласточка примчалась»", ["Вторая младшая группа", "Старшая группа"]],
+          ["«Колыбельная песня»", ["Вторая младшая группа"]],
+          ["«Осень» (отрывок)", ["Средняя группа"]]
+        ]
+      },
+      {
+        id: "tolstoy", name: "Алексей Константинович Толстой", portrait: "tolstoy.jpg",
+        bio: "Русский поэт, писатель и драматург. Создавал исторические произведения, стихи и сказки; не путайте его с Львом Николаевичем Толстым.",
+        works: [
+          ["«Колокольчики мои» (отрывок)", ["Первая младшая группа", "Вторая младшая группа"]],
+          ["«Золотой ключик, или Приключения Буратино» (отрывки)", ["Старшая группа"]],
+          ["«Осень. Осыпается весь наш бедный сад» (отрывок)", ["Старшая группа"]],
+          ["«Вот уж снег последний в поле тает» (отрывок)", ["Старшая группа"]]
+        ]
+      },
+      {
+        id: "plescheev", name: "Алексей Николаевич Плещеев", portrait: "plescheev.jpg",
+        bio: "Русский поэт и писатель. Его стихотворения о природе и временах года отличаются ясным, мелодичным языком.",
+        works: [
+          ["«Травка зеленеет» (из стихотворения «Сельская песня»)", ["Вторая младшая группа", "Старшая группа"]],
+          ["«Осень наступила» (сокращение)", ["Вторая младшая группа"]],
+          ["«Уж тает снег» (из стихотворения «Весна»)", ["Вторая младшая группа", "Средняя группа"]],
+          ["«Дождь шумел» (из стихотворения «В бурю»)", ["Средняя группа"]],
+          ["«Внучка»", ["Средняя группа"]]
+        ]
+      }
+    ];
+
+    const authorsPage = document.getElementById("authorsPage");
+    const authorPage = document.getElementById("authorPage");
+    const readerPage = document.getElementById("readerPage");
+    let currentAuthor = null;
+    let fontSize = 1.25;
+
+    function showAuthors() {
+      authorsPage.classList.remove("hidden");
+      authorPage.classList.add("hidden");
+      readerPage.classList.add("hidden");
+      window.scrollTo(0, 0);
+    }
+
+    function showWorks() {
+      authorsPage.classList.add("hidden");
+      authorPage.classList.remove("hidden");
+      readerPage.classList.add("hidden");
+      window.scrollTo(0, 0);
+    }
+
+    function openAuthor(id) {
+      currentAuthor = authors.find(author => author.id === id);
+      if (!currentAuthor) return;
+
+      document.getElementById("authorProfile").innerHTML = `
+        <div class="profile">
+          <div>
+            <img class="portrait" src="portraits/${currentAuthor.portrait}"
+                 alt="Портрет: ${currentAuthor.name}"
+                 onerror="this.outerHTML='<div class=&quot;portrait-placeholder&quot;>Добавьте файл<br>portraits/${currentAuthor.portrait}</div>'">
+          </div>
+          <div>
+                      <div class="eyebrow">Знакомимся с автором</div>
+            <h1>${currentAuthor.name}</h1>
+            <p class="bio">${currentAuthor.bio}</p>
+          </div>
+        </div>`;
+
+      document.getElementById("worksList").innerHTML = currentAuthor.works.map((work, index) => `
+        <button class="work-card" type="button" onclick="openWork(${index})">
+          <span class="work-title">${work[0]}</span>
+          <span class="work-groups">Группа: ${work[1].join(", ")}</span>
+        </button>`).join("");
+
+      showWorks();
+    }
+
+    function openWork(index) {
+      const work = currentAuthor.works[index];
+      fontSize = 1.25;
+      document.getElementById("reader").innerHTML = `
+        <div class="eyebrow">${currentAuthor.name}</div>
+        <h1>${work[0]}</h1>
+        <p><strong>Группа:</strong> ${work[1].join(", ")}</p>
+        <div class="reader-controls" aria-label="Настройки текста">
+          <span>Размер текста:</span>
+          <button type="button" onclick="changeFont(-0.1)" aria-label="Уменьшить текст">A−</button>
+          <button type="button" onclick="changeFont(0.1)" aria-label="Увеличить текст">A+</button>
+          <button type="button" onclick="resetFont()">Сбросить</button>
+        </div>
+        <div class="reader-text" id="readerText">Здесь можно разместить текст произведения.
+
+        Нажмите «Вернуться к списку произведений», чтобы выбрать другое стихотворение.</div>`;
+      authorsPage.classList.add("hidden");
+      authorPage.classList.add("hidden");
+      readerPage.classList.remove("hidden");
+      window.scrollTo(0, 0);
+    }
+
+    function changeFont(amount) {
+      fontSize = Math.min(2, Math.max(0.9, fontSize + amount));
+      document.getElementById("readerText").style.fontSize = fontSize + "rem";
+    }
+
+    function resetFont() {
+      fontSize = 1.25;
+      document.getElementById("readerText").style.fontSize = fontSize + "rem";
+    }
+
+    document.getElementById("authorGrid").innerHTML = authors.map(author => `
+      <button class="author-card" type="button" onclick="openAuthor('${author.id}')">
+        <strong>${author.name}</strong>
+        <span>Посмотреть биографию и произведения →</span>
+      </button>`).join("");
+
+    const themeButton = document.getElementById("themeButton");
+    if (localStorage.getItem("poetry-theme") === "dark") {
+      document.body.classList.add("dark");
+      themeButton.textContent = "☀️ Светлая тема";
+    }
+
+    themeButton.addEventListener("click", () => {
+      const dark = document.body.classList.toggle("dark");
+      localStorage.setItem("poetry-theme", dark ? "dark" : "light");
+      themeButton.textContent = dark ? "☀️ Светлая тема" : "🌙 Тёмная тема";
+    });
+  </script>
+</body>
+</html>
